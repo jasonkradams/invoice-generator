@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Invoice Generator</h1>
+            <p>Create professional invoices quickly and easily</p>
+        </header>
+
+        <main>
+            <nav class="tab-nav">
+                <button class="tab-btn active" onclick="showTab('invoice')">Create Invoice</button>
+                <button class="tab-btn" onclick="showTab('customers')">Manage Customers</button>
+            </nav>
+
+            <div id="invoice-tab" class="tab-content active">
+                <div class="invoice-form">
+                    <h2>Create New Invoice</h2>
+                
+                <div class="form-section">
+                    <h3>Invoice Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Date:</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dueDate">Due Date:</label>
+                            <input type="date" id="dueDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Client Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerSelect">Select Customer:</label>
+                            <select id="customerSelect" onchange="loadCustomerInfo()">
+                                <option value="">-- Select existing customer or enter manually --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="newCustomerBtn" class="btn-secondary" onclick="showNewCustomerForm()">Add New Customer</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientName">Client Name:</label>
+                            <input type="text" id="clientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clientEmail">Email:</label>
+                            <input type="email" id="clientEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientAddress">Address:</label>
+                            <textarea id="clientAddress" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="clientPhone">Phone:</label>
+                            <input type="tel" id="clientPhone">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Invoice Items</h3>
+                    <div class="items-container" id="itemsContainer">
+                        <div class="item-row">
+                            <div class="item-field">
+                                <label>Description:</label>
+                                <input type="text" class="item-description" required>
+                            </div>
+                            <div class="item-field">
+                                <label>Quantity:</label>
+                                <input type="number" class="item-quantity" min="1" value="1" required>
+                            </div>
+                            <div class="item-field">
+                                <label>Rate ($):</label>
+                                <input type="number" class="item-rate" min="0" step="0.01" required>
+                            </div>
+                            <div class="item-field">
+                                <label>Amount:</label>
+                                <input type="text" class="item-amount" readonly>
+                            </div>
+                            <button type="button" class="remove-item" onclick="removeItem(this)">×</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addItem" class="btn-secondary">Add Item</button>
+                </div>
+
+                <div class="form-section">
+                    <h3>Totals</h3>
+                    <div class="totals">
+                        <div class="total-row">
+                            <label>Subtotal:</label>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="total-row">
+                            <label for="tax">Tax ($):</label>
+                            <input type="number" id="tax" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="total-row total-final">
+                            <label>Total:</label>
+                            <span id="total">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Notes</h3>
+                    <textarea id="notes" rows="4" placeholder="Additional notes or payment terms..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="createInvoice" class="btn-primary">Create Invoice</button>
+                    <button type="button" id="previewInvoice" class="btn-secondary">Preview</button>
+                </div>
+            </div>
+
+                <div class="invoice-list">
+                    <h2>Recent Invoices</h2>
+                    <div id="invoicesList">
+                        <p class="no-invoices">No invoices created yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="customers-tab" class="tab-content">
+                <div class="customer-management">
+                    <h2>Customer Management</h2>
+                    
+                    <div class="customer-form">
+                        <h3>Add/Edit Customer</h3>
+                        <form id="customerForm">
+                            <input type="hidden" id="customerId">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="customerName">Name:</label>
+                                    <input type="text" id="customerName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="customerEmail">Email:</label>
+                                    <input type="email" id="customerEmail" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="customerCompany">Company:</label>
+                                    <input type="text" id="customerCompany">
+                                </div>
+                                <div class="form-group">
+                                    <label for="customerPhone">Phone:</label>
+                                    <input type="tel" id="customerPhone">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="customerAddress">Address:</label>
+                                    <textarea id="customerAddress" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="saveCustomer" class="btn-primary">Save Customer</button>
+                                <button type="button" id="cancelCustomer" class="btn-secondary" onclick="clearCustomerForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="customer-list">
+                        <h3>Existing Customers</h3>
+                        <div id="customersList">
+                            <p class="no-customers">No customers added yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
