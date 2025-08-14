@@ -108,13 +108,6 @@ header p {
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.invoice-form {
-    margin-bottom: 0;
-}
-
-.invoice-list {
     margin-bottom: 0;
 }
 
@@ -155,16 +148,19 @@ header p {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     padding: 12px;
     border: 2px solid #e9ecef;
     border-radius: 8px;
     font-size: 14px;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -202,6 +198,12 @@ header p {
     border: 1px solid #dee2e6;
     border-radius: 4px;
     font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.item-field input:focus {
+    outline: none;
+    border-color: #667eea;
 }
 
 .remove-item {
@@ -248,6 +250,12 @@ header p {
     border: 1px solid #dee2e6;
     border-radius: 4px;
     text-align: right;
+    transition: border-color 0.3s ease;
+}
+
+.total-row input:focus {
+    outline: none;
+    border-color: #667eea;
 }
 
 .total-final {
@@ -382,7 +390,114 @@ header p {
     background: #c82333;
 }
 
+.btn-template {
+    background: #9b59b6;
+    color: white;
+}
+
+.btn-template:hover {
+    background: #8e44ad;
+}
+
+.btn-add {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-add:hover {
+    background: #229954;
+}
+
+.btn-remove {
+    background: #e67e22;
+    color: white;
+}
+
+.btn-remove:hover {
+    background: #d35400;
+}
+
 .no-invoices {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px 20px;
+}
+
+/* Template Management Styles */
+.template-management {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.template-management h2,
+.template-list h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+}
+
+.template-management p {
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+.template-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.template-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.template-number {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 1.1em;
+}
+
+.template-amount {
+    font-weight: bold;
+    color: #27ae60;
+    font-size: 1.1em;
+}
+
+.template-client {
+    color: #34495e;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.template-date {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.template-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.no-templates {
     text-align: center;
     color: #6c757d;
     font-style: italic;
@@ -409,6 +524,13 @@ header p {
     border-radius: 8px;
     margin-bottom: 15px;
     border-left: 4px solid #667eea;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.customer-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
 }
 
 .customer-header {

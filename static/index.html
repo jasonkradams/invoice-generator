@@ -17,11 +17,13 @@
             <nav class="tab-nav">
                 <button class="tab-btn active" onclick="showTab('invoice')">Create Invoice</button>
                 <button class="tab-btn" onclick="showTab('customers')">Manage Customers</button>
+                <button class="tab-btn" onclick="showTab('templates')">Manage Templates</button>
             </nav>
 
             <div id="invoice-tab" class="tab-content active">
                 <div class="invoice-form">
                     <h2>Create New Invoice</h2>
+                    <form id="invoiceForm">
                 
                 <div class="form-section">
                     <h3>Invoice Details</h3>
@@ -38,6 +40,22 @@
                 </div>
 
                 <div class="form-section">
+                    <h3>Template & Form Actions</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceTemplateSelect">Load from Previous Invoice:</label>
+                            <select id="invoiceTemplateSelect" onchange="loadInvoiceTemplate()">
+                                <option value="">-- Select invoice to use as template --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="button" id="clearFormBtn" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
                     <h3>Client Information</h3>
                     <div class="form-row">
                         <div class="form-group">
@@ -47,6 +65,7 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>&nbsp;</label>
                             <button type="button" id="newCustomerBtn" class="btn-secondary" onclick="showNewCustomerForm()">Add New Customer</button>
                         </div>
                     </div>
@@ -125,7 +144,8 @@
                     <button type="button" id="createInvoice" class="btn-primary">Create Invoice</button>
                     <button type="button" id="previewInvoice" class="btn-secondary">Preview</button>
                 </div>
-            </div>
+                    </form>
+                </div>
 
                 <div class="invoice-list">
                     <h2>Recent Invoices</h2>
@@ -184,9 +204,28 @@
                     </div>
                 </div>
             </div>
+
+            <div id="templates-tab" class="tab-content">
+                <div class="template-management">
+                    <h2>Manage Invoice Templates</h2>
+                    <p>View, use, and delete your saved invoice templates.</p>
+                    
+                    <div class="template-list">
+                        <h3>Available Templates</h3>
+                        <div id="templatesList">
+                            <p class="no-templates">No invoice templates available.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
+    <!-- JavaScript modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/invoice.js"></script>
+    <script src="js/customer.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
