@@ -8,8 +8,14 @@ let currentTab = 'invoice';
 // Initialize application when page loads
 document.addEventListener('DOMContentLoaded', async function() {
     // Initialize managers
-    window.invoiceManager = new InvoiceManager();
-    window.customerManager = new CustomerManager();
+    window.customerManager = new CustomerManager(api);
+    window.invoiceManager = new InvoiceManager(api);
+    
+    // Ensure customer data is shared between managers
+    if (window.customerManager && window.invoiceManager) {
+        window.invoiceManager.customers = window.customerManager.customers;
+        window.invoiceManager.updateCustomerSelect();
+    }
     
     // Make functions globally accessible for onclick handlers
     window.toggleTemplate = function(invoiceId) {
@@ -75,6 +81,19 @@ function loadInvoiceTemplate() {
 function clearForm() {
     if (window.invoiceManager) {
         window.invoiceManager.clearForm();
+    }
+}
+
+function showNewCustomerForm() {
+    if (window.customerManager) {
+        window.customerManager.showNewCustomerForm();
+    }
+}
+
+function removeItem(button) {
+    button.parentElement.remove();
+    if (window.invoiceManager) {
+        window.invoiceManager.calculateTotals();
     }
 }
 

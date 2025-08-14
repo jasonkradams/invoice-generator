@@ -21,9 +21,18 @@ const DateUtils = {
 
 // Form validation utilities
 const ValidationUtils = {
-    validateEmail(email) {
+    isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
+    },
+
+    isValidPhone(phone) {
+        const phoneRegex = /^[\d\s\-\(\)]{10,}$/;
+        return phoneRegex.test(phone);
+    },
+
+    isEmpty(value) {
+        return !value || value.toString().trim().length === 0;
     },
 
     validateRequired(value) {
@@ -84,12 +93,24 @@ const DOMUtils = {
 const ErrorHandler = {
     showError(message, title = 'Error') {
         console.error(`${title}: ${message}`);
-        alert(`${title}: ${message}`);
+        // Create error message element for tests
+        if (typeof document !== 'undefined') {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = `${title}: ${message}`;
+            document.body.appendChild(errorDiv);
+        }
     },
 
     showSuccess(message, title = 'Success') {
         console.log(`${title}: ${message}`);
-        alert(`${title}: ${message}`);
+        // Create success message element for tests
+        if (typeof document !== 'undefined') {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = `${title}: ${message}`;
+            document.body.appendChild(successDiv);
+        }
     },
 
     handleApiError(error, context = '') {
@@ -108,3 +129,8 @@ const NumberUtils = {
         return parseFloat(currencyString.replace(/[$,]/g, '')) || 0;
     }
 };
+
+// Export for CommonJS (Node.js/Jest)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { DateUtils, NumberUtils, DOMUtils, ValidationUtils, ErrorHandler };
+}

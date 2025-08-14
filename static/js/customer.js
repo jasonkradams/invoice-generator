@@ -1,9 +1,12 @@
-// Customer management functionality
+// Customer Management Class
 class CustomerManager {
-    constructor() {
+    constructor(apiClient) {
         this.customers = [];
         this.editingCustomerId = null;
-        this.init();
+        this.api = apiClient || (typeof api !== 'undefined' ? api : null);
+        if (this.api) {
+            this.init();
+        }
     }
 
     async init() {
@@ -13,10 +16,14 @@ class CustomerManager {
 
     async loadCustomers() {
         try {
-            this.customers = await api.getCustomers();
+            this.customers = await this.api.getCustomers();
             this.displayCustomers();
         } catch (error) {
-            ErrorHandler.handleApiError(error, 'Failed to load customers:');
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.handleApiError(error, 'Failed to load customers:');
+            } else {
+                console.error('Failed to load customers:', error);
+            }
         }
     }
 
@@ -85,7 +92,7 @@ class CustomerManager {
             return false;
         }
 
-        if (data.email && !ValidationUtils.validateEmail(data.email)) {
+        if (data.email && !ValidationUtils.isValidEmail(data.email)) {
             ErrorHandler.showError('Please enter a valid email address');
             return false;
         }
@@ -114,8 +121,8 @@ class CustomerManager {
                     ${customer.address ? `<div class="customer-address">${customer.address}</div>` : ''}
                 </div>
                 <div class="customer-actions">
-                    <button class="btn-small btn-edit" onclick="customerManager.editCustomer(${customer.id})">Edit</button>
-                    <button class="btn-small btn-delete" onclick="customerManager.deleteCustomer(${customer.id})">Delete</button>
+                    <button class="btn-small btn-edit" onclick="editCustomer(${customer.id})">Edit</button>
+                    <button class="btn-small btn-delete" onclick="deleteCustomer(${customer.id})">Delete</button>
                 </div>
             </div>
         `).join('');
@@ -147,7 +154,7 @@ class CustomerManager {
 
         if (confirm(`Are you sure you want to delete customer "${customer.name}"?`)) {
             try {
-                await api.deleteCustomer(customerId);
+                await this.api.deleteCustomer(customerId);
                 this.customers = this.customers.filter(c => c.id !== customerId);
                 this.displayCustomers();
                 
@@ -157,10 +164,25 @@ class CustomerManager {
                     window.invoiceManager.updateCustomerSelect();
                 }
                 
-                ErrorHandler.showSuccess('Customer deleted successfully!');
+                if (typeof ErrorHandler !== 'undefined') {
+                    ErrorHandler.showSuccess('Customer deleted successfully!');
+                }
             } catch (error) {
-                ErrorHandler.handleApiError(error, 'Failed to delete customer:');
+                if (typeof ErrorHandler !== 'undefined') {
+                    ErrorHandler.handleApiError(error, 'Failed to delete customer:');
+                } else {
+                    console.error('Failed to delete customer:', error);
+                }
             }
+        }
+    }
+
+    showNewCustomerForm() {
+        this.clearCustomerForm();
+        // Show customer form/tab if needed
+        const customerTab = document.getElementById('customers-tab');
+        if (customerTab && !customerTab.classList.contains('active')) {
+            showTab('customers');
         }
     }
 
@@ -181,3 +203,8 @@ class CustomerManager {
 
 // Global customer manager instance
 let customerManager;
+
+// Export for CommonJS (Node.js/Jest)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { CustomerManager };
+}

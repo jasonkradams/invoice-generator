@@ -273,7 +273,11 @@ func (s *Server) deleteCustomer(w http.ResponseWriter, r *http.Request) {
 	if _, index := s.findCustomerByID(id); index != -1 {
 		s.customers = append(s.customers[:index], s.customers[index+1:]...)
 		s.saveData()
-		w.WriteHeader(http.StatusNoContent)
+		
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Customer deleted successfully",
+		})
 		return
 	}
 

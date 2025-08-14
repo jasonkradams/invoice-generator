@@ -1,4 +1,4 @@
-// API utility functions for making HTTP requests
+// API Client for handling HTTP requests
 class ApiClient {
     constructor(baseUrl = '') {
         this.baseUrl = baseUrl;
@@ -85,3 +85,8 @@ class ApiClient {
 
 // Global API client instance
 const api = new ApiClient();
+
+// Export for CommonJS (Node.js/Jest)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { ApiClient };
+}

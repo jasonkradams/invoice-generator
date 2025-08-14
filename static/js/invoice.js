@@ -1,9 +1,12 @@
-// Invoice management functionality
+// Invoice Management Class
 class InvoiceManager {
-    constructor() {
+    constructor(apiClient) {
         this.invoices = [];
         this.customers = [];
-        this.init();
+        this.api = apiClient || (typeof api !== 'undefined' ? api : null);
+        if (this.api) {
+            this.init();
+        }
     }
 
     async init() {
@@ -14,14 +17,20 @@ class InvoiceManager {
 
     async loadData() {
         try {
-            [this.invoices, this.customers] = await Promise.all([
-                api.getInvoices(),
-                api.getCustomers()
-            ]);
-            
+            this.invoices = await this.api.getInvoices() || [];
+            this.customers = await this.api.getCustomers() || [];
             this.updateDisplays();
         } catch (error) {
-            ErrorHandler.handleApiError(error, 'Failed to load data:');
+            // Initialize with empty arrays on error
+            this.invoices = [];
+            this.customers = [];
+            this.updateDisplays();
+            
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.handleApiError(error, 'Failed to load data:');
+            } else {
+                console.error('Failed to load data:', error);
+            }
         }
     }
 
@@ -36,9 +45,10 @@ class InvoiceManager {
         // Set default dates
         DOMUtils.setElementValue('date', DateUtils.getTodayString());
         DOMUtils.setElementValue('dueDate', DateUtils.getFutureDateString(30));
-        
-        // Add initial invoice item
-        this.addInvoiceItem();
+
+        // Set up listeners for existing item row
+        this.updateItemListeners();
+        this.calculateTotals();
     }
 
     setupEventListeners() {
@@ -65,6 +75,12 @@ class InvoiceManager {
         if (customerSelect) {
             customerSelect.addEventListener('change', () => this.handleCustomerSelect());
         }
+
+        // Tax field listener
+        const taxField = DOMUtils.getElementById('tax');
+        if (taxField) {
+            taxField.addEventListener('input', () => this.calculateTotals());
+        }
     }
 
     async handleFormSubmit(e) {
@@ -76,15 +92,21 @@ class InvoiceManager {
                 return;
             }
 
-            const newInvoice = await api.createInvoice(invoiceData);
+            const newInvoice = await this.api.createInvoice(invoiceData);
             this.invoices.push(newInvoice);
             
             this.updateDisplays();
             this.clearForm();
-            ErrorHandler.showSuccess('Invoice created successfully!');
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.showSuccess('Invoice created successfully!');
+            }
             
         } catch (error) {
-            ErrorHandler.handleApiError(error, 'Failed to create invoice:');
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.handleApiError(error, 'Failed to create invoice:');
+            } else {
+                console.error('Failed to create invoice:', error);
+            }
         }
     }
 
@@ -150,25 +172,28 @@ class InvoiceManager {
         const itemRow = document.createElement('div');
         itemRow.className = 'item-row';
         itemRow.innerHTML = `
-            <div class="form-group">
-                <input type="text" class="item-description" placeholder="Description" required>
+            <div class="item-field">
+                <label>Description:</label>
+                <input type="text" class="item-description" required>
             </div>
-            <div class="form-group">
-                <input type="number" class="item-quantity" placeholder="Qty" min="1" value="1" required>
+            <div class="item-field">
+                <label>Quantity:</label>
+                <input type="number" class="item-quantity" min="1" value="1" required>
             </div>
-            <div class="form-group">
-                <input type="number" class="item-rate" placeholder="Rate" min="0" step="0.01" required>
+            <div class="item-field">
+                <label>Rate ($):</label>
+                <input type="number" class="item-rate" min="0" step="0.01" required>
             </div>
-            <div class="form-group">
-                <input type="text" class="item-amount" placeholder="Amount" readonly>
+            <div class="item-field">
+                <label>Amount:</label>
+                <input type="text" class="item-amount" readonly>
             </div>
-            <div class="form-group">
-                <button type="button" class="btn-remove-item" onclick="this.parentElement.parentElement.remove(); invoiceManager.calculateTotals();">Remove</button>
-            </div>
+            <button type="button" class="remove-item" onclick="this.parentElement.remove(); window.invoiceManager.calculateTotals();">×</button>
         `;
 
         container.appendChild(itemRow);
         this.updateItemListeners();
+        this.calculateTotals();
     }
 
     updateItemListeners() {
@@ -201,8 +226,16 @@ class InvoiceManager {
         const tax = parseFloat(DOMUtils.getElementValue('tax')) || 0;
         const total = subtotal + tax;
 
-        DOMUtils.setElementValue('subtotal', NumberUtils.formatCurrency(subtotal));
-        DOMUtils.setElementValue('total', NumberUtils.formatCurrency(total));
+        // Update subtotal and total display elements
+        const subtotalElement = document.getElementById('subtotal');
+        const totalElement = document.getElementById('total');
+        
+        if (subtotalElement) {
+            subtotalElement.textContent = NumberUtils.formatCurrency(subtotal);
+        }
+        if (totalElement) {
+            totalElement.textContent = NumberUtils.formatCurrency(total);
+        }
     }
 
     displayInvoices() {
@@ -237,7 +270,7 @@ class InvoiceManager {
         const container = DOMUtils.getElementById('templatesList');
         if (!container) return;
 
-        if (this.invoices.length === 0) {
+        if (!this.invoices || this.invoices.length === 0) {
             container.innerHTML = '<p class="no-templates">No invoices loaded yet.</p>';
             return;
         }
@@ -267,7 +300,10 @@ class InvoiceManager {
 
         select.innerHTML = '<option value="">-- Select customer --</option>';
         
-        this.customers.forEach(customer => {
+        // Use customers from customerManager if available, otherwise use local copy
+        const customers = (window.customerManager && window.customerManager.customers) || this.customers || [];
+        
+        customers.forEach(customer => {
             const option = document.createElement('option');
             option.value = customer.id;
             option.textContent = customer.name;
@@ -294,14 +330,18 @@ class InvoiceManager {
 
     async toggleTemplate(invoiceId) {
         try {
-            const response = await api.toggleTemplate(invoiceId);
+            const response = await this.api.toggleTemplate(invoiceId);
             const invoice = this.invoices.find(inv => inv.id === invoiceId);
             if (invoice) {
                 invoice.template = response.template;
                 this.updateDisplays();
             }
         } catch (error) {
-            ErrorHandler.handleApiError(error, 'Failed to update template status:');
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.handleApiError(error, 'Failed to update template status:');
+            } else {
+                console.error('Failed to update template status:', error);
+            }
         }
     }
 
@@ -463,3 +503,8 @@ ${invoice.notes ? 'Notes:\n' + invoice.notes : ''}`;
 
 // Global invoice manager instance
 let invoiceManager;
+
+// Export for CommonJS (Node.js/Jest)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { InvoiceManager };
+}
