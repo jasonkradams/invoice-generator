@@ -55,7 +55,6 @@ class CustomerManager {
                 if (index !== -1) {
                     this.customers[index] = savedCustomer;
                 }
-                ErrorHandler.showSuccess('Customer updated successfully!');
             } else {
                 savedCustomer = await api.createCustomer(customerData);
                 this.customers.push(savedCustomer);

@@ -43,8 +43,24 @@ type InvoiceItem struct {
 	Amount      float64 `json:"amount"`
 }
 
-// Meta holds metadata for ID generation
+// CompanyInfo represents company information for invoices
+type CompanyInfo struct {
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Phone   string `json:"phone"`
+	Website string `json:"website"`
+	Address string `json:"address"`
+}
+
+// Settings represents application settings
+type Settings struct {
+	Company       CompanyInfo `json:"company"`
+	DataDirectory string      `json:"dataDirectory"`
+}
+
+// Meta represents metadata for the application
 type Meta struct {
-	NextID         int `json:"nextId"`
-	NextCustomerID int `json:"nextCustomerId"`
+	NextID         int      `json:"nextID"`
+	NextCustomerID int      `json:"nextCustomerID"`
+	Settings       Settings `json:"settings"`
 }

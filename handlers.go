@@ -15,26 +15,35 @@ type Server struct {
 	customers      []Customer
 	nextID         int
 	nextCustomerID int
+	meta           Meta
 	storage        *Storage
 }
 
 // NewServer creates a new server instance
 func NewServer() *Server {
-	storage := NewStorage()
-	invoices, customers, nextID, nextCustomerID := storage.LoadData()
+	storage := NewStorage("data") // Start with default, will be updated from settings
+	invoices, customers, nextID, nextCustomerID, settings := storage.LoadData()
+
+	// Update storage with configured data directory
+	if settings.DataDirectory != "" {
+		storage.SetDataDirectory(settings.DataDirectory)
+	}
 
 	return &Server{
 		invoices:       invoices,
 		customers:      customers,
 		nextID:         nextID,
 		nextCustomerID: nextCustomerID,
+		meta:           Meta{NextID: nextID, NextCustomerID: nextCustomerID, Settings: settings},
 		storage:        storage,
 	}
 }
 
 // saveData is a helper method to save data
 func (s *Server) saveData() {
-	s.storage.SaveData(s.invoices, s.customers, s.nextID, s.nextCustomerID)
+	s.meta.NextID = s.nextID
+	s.meta.NextCustomerID = s.nextCustomerID
+	s.storage.SaveData(s.invoices, s.customers, s.meta)
 }
 
 // findInvoiceByID finds an invoice by ID
@@ -97,7 +106,7 @@ func (s *Server) createInvoice(w http.ResponseWriter, r *http.Request) {
 	if s.nextID == 0 {
 		s.nextID = 1
 	}
-	
+
 	invoice.ID = s.nextID
 	s.nextID++
 	invoice.InvoiceNum = fmt.Sprintf("INV-%04d", invoice.ID)
@@ -279,13 +288,40 @@ func (s *Server) deleteCustomer(w http.ResponseWriter, r *http.Request) {
 	if _, index := s.findCustomerByID(id); index != -1 {
 		s.customers = append(s.customers[:index], s.customers[index+1:]...)
 		s.saveData()
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"message": "Customer deleted successfully",
 		})
 		return
 	}
-
 	http.Error(w, "Customer not found", http.StatusNotFound)
+}
+
+// Settings handlers
+func (s *Server) getSettings(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.meta.Settings)
+}
+
+func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request) {
+	var settings Settings
+	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
+		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Update settings in memory
+	s.meta.Settings = settings
+
+	// Update storage data directory if it changed
+	if settings.DataDirectory != "" {
+		s.storage.SetDataDirectory(settings.DataDirectory)
+	}
+
+	// Save to storage
+	s.saveData()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "success"})
 }

@@ -25,6 +25,22 @@ class ApiClient {
         }
     }
 
+    async updateSettings(settings) {
+        const response = await fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settings)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    }
+
     // Invoice API methods
     async getInvoices() {
         return this.request('/api/invoices');
@@ -81,7 +97,22 @@ class ApiClient {
             method: 'DELETE'
         });
     }
+
+    // Settings API methods
+    async getSettings() {
+        return this.request('/api/settings');
+    }
+
+    async updateSettings(settingsData) {
+        return this.request('/api/settings', {
+            method: 'POST',
+            body: JSON.stringify(settingsData)
+        });
+    }
 }
+
+// Create API alias for backward compatibility
+const API = ApiClient;
 
 // Global API client instance
 const api = new ApiClient();

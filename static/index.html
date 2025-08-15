@@ -22,9 +22,10 @@
 
         <main>
             <nav class="tab-nav">
-                <button class="tab-btn active" onclick="showTab('invoice')">Create Invoice</button>
-                <button class="tab-btn" onclick="showTab('customers')">Manage Customers</button>
-                <button class="tab-btn" onclick="showTab('templates')">Manage Templates</button>
+                <button class="tab-btn active" id="invoice-tab-btn">Create Invoice</button>
+                <button class="tab-btn" id="customers-tab-btn">Manage Customers</button>
+                <button class="tab-btn" id="templates-tab-btn">Manage Templates</button>
+                <button class="tab-btn" id="settings-tab-btn">Settings</button>
             </nav>
 
             <div id="invoice-tab" class="tab-content active">
@@ -229,6 +230,66 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-management">
+                    <h2>Settings</h2>
+                    <p>Configure your invoice system settings and company information.</p>
+
+                    <!-- Company Information Section -->
+                    <div class="settings-section">
+                        <h3>Company Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyName">Company Name:</label>
+                                <input type="text" id="companyName" placeholder="Your Company Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="companyEmail">Email:</label>
+                                <input type="email" id="companyEmail" placeholder="company@example.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyPhone">Phone:</label>
+                                <input type="tel" id="companyPhone" placeholder="(555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label for="companyWebsite">Website:</label>
+                                <input type="url" id="companyWebsite" placeholder="https://yourcompany.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="companyAddress">Address:</label>
+                                <textarea id="companyAddress" rows="3" placeholder="123 Business St, City, State 12345"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Storage Section -->
+                    <div class="settings-section">
+                        <h3>Data Storage</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dataDirectory">Data Directory:</label>
+                                <div class="directory-picker">
+                                    <input type="text" id="dataDirectory" placeholder="data" value="data" title="Edit this path after using Browse to select the correct absolute path">
+                                    <button type="button" id="browseDirectory" class="btn-browse">Browse...</button>
+                                </div>
+                                <small>Directory where invoices and customer data will be saved</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-primary" onclick="saveSettings()">Save Settings</button>
+                        <button type="button" class="btn-secondary" onclick="resetSettings()">Reset to Defaults</button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -236,6 +297,7 @@
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/theme.js"></script>
+    <script src="js/settings.js"></script>
     <script src="js/customer.js"></script>
     <script src="js/invoice.js"></script>
     <script src="app.js"></script>

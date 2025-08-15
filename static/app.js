@@ -5,30 +5,17 @@ let invoices = [];
 let customers = [];
 let currentTab = 'invoice';
 
-// Initialize application when page loads
-document.addEventListener('DOMContentLoaded', async function() {
-    // Initialize managers
-    window.customerManager = new CustomerManager(api);
-    window.invoiceManager = new InvoiceManager(api);
+// Initialize the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const apiClient = new ApiClient();
     
-    // Ensure customer data is shared between managers
-    if (window.customerManager && window.invoiceManager) {
-        window.invoiceManager.customers = window.customerManager.customers;
-        window.invoiceManager.updateCustomerSelect();
-    }
+    // Initialize managers with API dependency
+    window.invoiceManager = new InvoiceManager(apiClient);
+    window.customerManager = new CustomerManager(apiClient);
+    window.settingsManager = new SettingsManager(apiClient);
     
-    // Make functions globally accessible for onclick handlers
-    window.toggleTemplate = function(invoiceId) {
-        if (window.invoiceManager) {
-            window.invoiceManager.toggleTemplate(invoiceId);
-        }
-    };
-    
-    window.viewInvoice = function(invoiceId) {
-        if (window.invoiceManager) {
-            window.invoiceManager.viewInvoice(invoiceId);
-        }
-    };
+    // Load initial data - managers handle their own loading in init()
+    // No need to call loadInvoices/loadCustomers as they're called in init()
     
     // Set up tab switching
     setupTabSwitching();
@@ -49,7 +36,7 @@ function setupTabSwitching() {
 
         // Show selected tab
         const targetTab = document.getElementById(`${tabName}-tab`);
-        const targetBtn = document.querySelector(`[onclick=\"showTab('${tabName}')\"]`);
+        const targetBtn = document.getElementById(`${tabName}-tab-btn`);
         
         if (targetTab) targetTab.classList.add('active');
         if (targetBtn) targetBtn.classList.add('active');
@@ -59,6 +46,12 @@ function setupTabSwitching() {
             window.invoiceManager.displayTemplates();
         }
     };
+
+    // Add click event listeners to tab buttons
+    document.getElementById('invoice-tab-btn')?.addEventListener('click', () => showTab('invoice'));
+    document.getElementById('customers-tab-btn')?.addEventListener('click', () => showTab('customers'));
+    document.getElementById('templates-tab-btn')?.addEventListener('click', () => showTab('templates'));
+    document.getElementById('settings-tab-btn')?.addEventListener('click', () => showTab('settings'));
     
     // Show default tab
     showTab('invoice');

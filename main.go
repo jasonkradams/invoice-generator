@@ -30,6 +30,10 @@ func main() {
 	r.HandleFunc("/api/customers/{id}", server.updateCustomer).Methods("PUT")
 	r.HandleFunc("/api/customers/{id}", server.deleteCustomer).Methods("DELETE")
 
+	// Settings routes
+	r.HandleFunc("/api/settings", server.getSettings).Methods("GET")
+	r.HandleFunc("/api/settings", server.updateSettings).Methods("POST")
+
 	// Serve static files
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 

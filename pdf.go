@@ -40,14 +40,16 @@ func (s *Server) addHeader(pdf *gofpdf.Fpdf, invoice Invoice) {
 	// Company name/logo area - use Text() for precise positioning
 	pdf.SetFont("Arial", "B", 24)
 	pdf.SetTextColor(51, 51, 51)
-	pdf.Text(20, pdf.GetY()+12, "Adams Family Household")
+	pdf.Text(20, pdf.GetY()+12, s.meta.Settings.Company.Name)
 	pdf.Ln(15)
 
 	pdf.SetFont("Arial", "", 10)
 	pdf.SetTextColor(102, 102, 102)
-	pdf.Text(20, pdf.GetY()+5, "16112 E 23rd Ct, Spokane Valley, WA 99037")
+	pdf.Text(20, pdf.GetY()+5, s.meta.Settings.Company.Address)
 	pdf.Ln(4)
-	pdf.Text(20, pdf.GetY()+5, "Phone: (425) 879-9792 | Email: jason.k.r.adams@gmail.com")
+
+	contactInfo := fmt.Sprintf("Phone: %s | Email: %s", s.meta.Settings.Company.Phone, s.meta.Settings.Company.Email)
+	pdf.Text(20, pdf.GetY()+5, contactInfo)
 	pdf.Ln(15)
 
 	// INVOICE title with background
