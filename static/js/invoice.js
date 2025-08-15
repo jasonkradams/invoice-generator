@@ -225,11 +225,43 @@ class InvoiceManager {
         const quantityInputs = document.querySelectorAll('.item-quantity');
         const rateInputs = document.querySelectorAll('.item-rate');
         const percentageInputs = document.querySelectorAll('.item-percentage');
+        const amountInputs = document.querySelectorAll('.item-amount');
         
         [...quantityInputs, ...rateInputs, ...percentageInputs].forEach(input => {
             input.removeEventListener('input', this.calculateTotals.bind(this));
             input.addEventListener('input', this.calculateTotals.bind(this));
         });
+
+        // Add keyboard navigation for Amount fields
+        amountInputs.forEach(amountInput => {
+            amountInput.removeEventListener('keydown', this.handleAmountKeydown.bind(this));
+            amountInput.addEventListener('keydown', this.handleAmountKeydown.bind(this));
+        });
+    }
+
+    handleAmountKeydown(e) {
+        // Check if Tab key is pressed (without Shift)
+        if (e.key === 'Tab' && !e.shiftKey) {
+            const currentRow = e.target.closest('.item-row');
+            const allRows = document.querySelectorAll('.item-row');
+            const currentIndex = Array.from(allRows).indexOf(currentRow);
+            
+            // If this is the last row, create a new item
+            if (currentIndex === allRows.length - 1) {
+                e.preventDefault(); // Prevent default tab behavior
+                this.addInvoiceItem();
+                
+                // Focus on the description field of the newly created item
+                setTimeout(() => {
+                    const newRows = document.querySelectorAll('.item-row');
+                    const newRow = newRows[newRows.length - 1];
+                    const descriptionField = newRow.querySelector('.item-description');
+                    if (descriptionField) {
+                        descriptionField.focus();
+                    }
+                }, 0);
+            }
+        }
     }
 
     calculateTotals() {

@@ -172,7 +172,7 @@ header p {
 
 .item-row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
     gap: 15px;
     align-items: end;
     margin-bottom: 15px;
