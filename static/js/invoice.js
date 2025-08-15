@@ -151,9 +151,10 @@ class InvoiceManager {
             const description = row.querySelector('.item-description')?.value || '';
             const quantity = parseInt(row.querySelector('.item-quantity')?.value) || 1;
             const rate = parseFloat(row.querySelector('.item-rate')?.value) || 0;
+            const percentage = parseFloat(row.querySelector('.item-percentage')?.value) || 100;
             
             if (description.trim()) {
-                items.push({ description, quantity, rate });
+                items.push({ description, quantity, rate, percentage });
             }
         });
         
@@ -205,6 +206,10 @@ class InvoiceManager {
                 <input type="number" class="item-rate" min="0" step="0.01" required>
             </div>
             <div class="item-field">
+                <label>% of Total:</label>
+                <input type="number" class="item-percentage" min="1" max="100" step="0.01" value="100" required>
+            </div>
+            <div class="item-field">
                 <label>Amount:</label>
                 <input type="text" class="item-amount" readonly>
             </div>
@@ -219,8 +224,9 @@ class InvoiceManager {
     updateItemListeners() {
         const quantityInputs = document.querySelectorAll('.item-quantity');
         const rateInputs = document.querySelectorAll('.item-rate');
+        const percentageInputs = document.querySelectorAll('.item-percentage');
         
-        [...quantityInputs, ...rateInputs].forEach(input => {
+        [...quantityInputs, ...rateInputs, ...percentageInputs].forEach(input => {
             input.removeEventListener('input', this.calculateTotals.bind(this));
             input.addEventListener('input', this.calculateTotals.bind(this));
         });
@@ -233,7 +239,10 @@ class InvoiceManager {
         itemRows.forEach(row => {
             const quantity = parseFloat(row.querySelector('.item-quantity')?.value) || 0;
             const rate = parseFloat(row.querySelector('.item-rate')?.value) || 0;
-            const amount = quantity * rate;
+            const percentage = parseFloat(row.querySelector('.item-percentage')?.value) || 0;
+            
+            // Amount = Rate * Percentage (as decimal)
+            const amount = rate * (percentage / 100);
             
             const amountField = row.querySelector('.item-amount');
             if (amountField) {
