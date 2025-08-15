@@ -101,3 +101,15 @@ function deleteCustomer(id) {
         window.customerManager.deleteCustomer(id);
     }
 }
+
+function toggleTemplate(invoiceId) {
+    if (window.invoiceManager) {
+        window.invoiceManager.toggleTemplate(invoiceId);
+    }
+}
+
+function viewInvoice(invoiceId) {
+    if (window.invoiceManager) {
+        window.invoiceManager.viewInvoice(invoiceId);
+    }
+}
