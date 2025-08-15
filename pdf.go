@@ -57,18 +57,20 @@ func (s *Server) createInvoicePDF(invoice Invoice) *gofpdf.Fpdf {
 func (s *Server) addItemsTable(pdf *gofpdf.Fpdf, items []InvoiceItem) {
 	// Table header
 	pdf.SetFont("Arial", "B", 10)
-	pdf.Cell(80, 7, "Description")
-	pdf.Cell(20, 7, "Qty")
-	pdf.Cell(30, 7, "Rate")
+	pdf.Cell(70, 7, "Description")
+	pdf.Cell(15, 7, "Qty")
+	pdf.Cell(25, 7, "Rate")
+	pdf.Cell(20, 7, "% Total")
 	pdf.Cell(30, 7, "Amount")
 	pdf.Ln(7)
 
 	// Table rows
 	pdf.SetFont("Arial", "", 10)
 	for _, item := range items {
-		pdf.Cell(80, 6, item.Description)
-		pdf.Cell(20, 6, fmt.Sprintf("%d", item.Quantity))
-		pdf.Cell(30, 6, fmt.Sprintf("$%.2f", item.Rate))
+		pdf.Cell(70, 6, item.Description)
+		pdf.Cell(15, 6, fmt.Sprintf("%d", item.Quantity))
+		pdf.Cell(25, 6, fmt.Sprintf("$%.2f", item.Rate))
+		pdf.Cell(20, 6, fmt.Sprintf("%.1f%%", item.Percentage))
 		pdf.Cell(30, 6, fmt.Sprintf("$%.2f", item.Amount))
 		pdf.Ln(6)
 	}

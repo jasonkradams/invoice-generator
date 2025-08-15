@@ -61,7 +61,8 @@ func (s *Server) findCustomerByID(id int) (*Customer, int) {
 func (s *Server) calculateInvoiceTotals(invoice *Invoice) {
 	invoice.Subtotal = 0
 	for i := range invoice.Items {
-		invoice.Items[i].Amount = float64(invoice.Items[i].Quantity) * invoice.Items[i].Rate
+		// Amount = Rate * (Percentage / 100)
+		invoice.Items[i].Amount = invoice.Items[i].Rate * (invoice.Items[i].Percentage / 100)
 		invoice.Subtotal += invoice.Items[i].Amount
 	}
 	invoice.Total = invoice.Subtotal + invoice.Tax

@@ -39,6 +39,7 @@ type InvoiceItem struct {
 	Description string  `json:"description"`
 	Quantity    int     `json:"quantity"`
 	Rate        float64 `json:"rate"`
+	Percentage  float64 `json:"percentage"`
 	Amount      float64 `json:"amount"`
 }
 
