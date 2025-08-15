@@ -1,3 +1,43 @@
+:root {
+    /* Light theme colors */
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f8f9fa;
+    --text-primary: #333333;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color: #e9ecef;
+    --border-light: #dee2e6;
+    --accent-primary: #667eea;
+    --accent-secondary: #764ba2;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --shadow: rgba(0,0,0,0.1);
+    --shadow-light: rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] {
+    /* Dark theme colors */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-muted: #b0b0b0;
+    --border-color: #404040;
+    --border-light: #505050;
+    --accent-primary: #7c8aed;
+    --accent-secondary: #8a5aa8;
+    --success-color: #4caf50;
+    --danger-color: #f44336;
+    --warning-color: #ff9800;
+    --info-color: #2196f3;
+    --shadow: rgba(0,0,0,0.3);
+    --shadow-light: rgba(0,0,0,0.2);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,8 +47,9 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f8f9fa;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -18,13 +59,55 @@ body {
 }
 
 header {
-    text-align: center;
     margin-bottom: 40px;
     padding: 40px 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
     color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header-text {
+    text-align: center;
+    flex: 1;
+}
+
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.theme-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+[data-theme="dark"] .theme-icon {
+    transform: rotate(180deg);
 }
 
 header h1 {
@@ -42,20 +125,20 @@ header p {
 .tab-nav {
     display: flex;
     margin-bottom: 30px;
-    border-bottom: 2px solid #e9ecef;
-    background: white;
+    border-bottom: 2px solid var(--border-color);
+    background: var(--bg-secondary);
     border-radius: 12px 12px 0 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 10px var(--shadow-light);
     overflow: hidden;
 }
 
 .tab-btn {
-    background: white;
+    background: var(--bg-secondary);
     border: none;
     padding: 15px 30px;
     font-size: 1rem;
     font-weight: 500;
-    color: #6c757d;
+    color: var(--text-muted);
     cursor: pointer;
     border-bottom: 3px solid transparent;
     transition: all 0.3s ease;
@@ -64,14 +147,14 @@ header p {
 }
 
 .tab-btn:hover {
-    color: #495057;
-    background-color: #f8f9fa;
+    color: var(--text-secondary);
+    background-color: var(--bg-tertiary);
 }
 
 .tab-btn.active {
-    color: #667eea;
-    border-bottom-color: #667eea;
-    background-color: #fff;
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+    background-color: var(--bg-secondary);
     font-weight: 600;
 }
 
@@ -104,18 +187,18 @@ header p {
 }
 
 .invoice-form, .invoice-list {
-    background: white;
+    background: var(--bg-secondary);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow);
     margin-bottom: 0;
 }
 
 .invoice-form h2, .invoice-list h2 {
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 25px;
     font-size: 1.5rem;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 10px;
 }
 
@@ -124,7 +207,7 @@ header p {
 }
 
 .form-section h3 {
-    color: #495057;
+    color: var(--text-secondary);
     margin-bottom: 15px;
     font-size: 1.2rem;
 }
@@ -144,26 +227,36 @@ header p {
 .form-group label {
     margin-bottom: 5px;
     font-weight: 600;
-    color: #495057;
+    color: var(--text-secondary);
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
     padding: 12px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.3s ease;
-    background: white;
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--accent-primary);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Specific override for notes textarea */
+#notes {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--border-color) !important;
 }
 
 .items-container {
@@ -177,7 +270,7 @@ header p {
     align-items: end;
     margin-bottom: 15px;
     padding: 15px;
-    background: #f8f9fa;
+    background: var(--bg-tertiary);
     border-radius: 8px;
 }
 
@@ -189,25 +282,27 @@ header p {
 .item-field label {
     margin-bottom: 5px;
     font-weight: 600;
-    color: #495057;
+    color: var(--text-secondary);
     font-size: 12px;
 }
 
 .item-field input {
     padding: 8px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     font-size: 14px;
     transition: border-color 0.3s ease;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .item-field input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--accent-primary);
 }
 
 .remove-item {
-    background: #dc3545;
+    background: var(--danger-color);
     color: white;
     border: none;
     border-radius: 50%;
@@ -226,10 +321,10 @@ header p {
 }
 
 .totals {
-    background: #f8f9fa;
+    background: var(--bg-tertiary);
     padding: 20px;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--accent-primary);
 }
 
 .total-row {
@@ -241,25 +336,27 @@ header p {
 
 .total-row label {
     font-weight: 600;
-    color: #495057;
+    color: var(--text-secondary);
 }
 
 .total-row input {
     width: 120px;
     padding: 8px;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-light);
     border-radius: 4px;
     text-align: right;
     transition: border-color 0.3s ease;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .total-row input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--accent-primary);
 }
 
 .total-final {
-    border-top: 2px solid #dee2e6;
+    border-top: 2px solid var(--border-light);
     padding-top: 10px;
     margin-top: 10px;
     font-size: 1.2rem;
@@ -267,7 +364,7 @@ header p {
 }
 
 .total-final span {
-    color: #28a745;
+    color: var(--success-color);
     font-size: 1.3rem;
 }
 
@@ -291,7 +388,7 @@ header p {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
     color: white;
 }
 
@@ -301,7 +398,7 @@ header p {
 }
 
 .btn-secondary {
-    background: #6c757d;
+    background: var(--text-muted);
     color: white;
 }
 
@@ -316,14 +413,15 @@ header p {
 
 .invoice-item {
     padding: 15px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 10px;
     transition: all 0.3s ease;
+    background: var(--bg-secondary);
 }
 
 .invoice-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px var(--shadow);
     transform: translateY(-1px);
 }
 
@@ -336,22 +434,22 @@ header p {
 
 .invoice-number {
     font-weight: 700;
-    color: #667eea;
+    color: var(--accent-primary);
 }
 
 .invoice-amount {
     font-weight: 700;
-    color: #28a745;
+    color: var(--success-color);
 }
 
 .invoice-client {
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 14px;
     margin-bottom: 5px;
 }
 
 .invoice-date {
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 12px;
 }
 
@@ -419,44 +517,44 @@ header p {
 
 .no-invoices {
     text-align: center;
-    color: #6c757d;
+    color: var(--text-muted);
     font-style: italic;
     padding: 40px 20px;
 }
 
 /* Template Management Styles */
 .template-management {
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 12px;
     padding: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow);
 }
 
 .template-management h2,
 .template-list h3 {
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 20px;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 10px;
 }
 
 .template-management p {
-    color: #6c757d;
+    color: var(--text-muted);
     margin-bottom: 30px;
 }
 
 .template-item {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 15px;
     transition: all 0.3s ease;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--accent-primary);
 }
 
 .template-item:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px var(--shadow);
     transform: translateY(-2px);
 }
 
@@ -469,24 +567,24 @@ header p {
 
 .template-number {
     font-weight: bold;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 1.1em;
 }
 
 .template-amount {
     font-weight: bold;
-    color: #27ae60;
+    color: var(--success-color);
     font-size: 1.1em;
 }
 
 .template-client {
-    color: #34495e;
+    color: var(--text-secondary);
     margin-bottom: 5px;
     font-weight: 500;
 }
 
 .template-date {
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 0.9em;
     margin-bottom: 15px;
 }
@@ -499,37 +597,37 @@ header p {
 
 .no-templates {
     text-align: center;
-    color: #6c757d;
+    color: var(--text-muted);
     font-style: italic;
     padding: 40px 20px;
 }
 
 /* Customer Management Styles */
 .customer-management {
-    background: white;
+    background: var(--bg-secondary);
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px var(--shadow);
 }
 
 .customer-form {
     margin-bottom: 40px;
     padding-bottom: 30px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .customer-item {
-    background: #f8f9fa;
+    background: var(--bg-tertiary);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 15px;
-    border-left: 4px solid #667eea;
-    border: 1px solid #dee2e6;
+    border-left: 4px solid var(--accent-primary);
+    border: 1px solid var(--border-light);
     transition: all 0.3s ease;
 }
 
 .customer-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px var(--shadow);
     transform: translateY(-1px);
 }
 
@@ -543,16 +641,16 @@ header p {
 .customer-name {
     font-weight: 600;
     font-size: 1.1rem;
-    color: #2c3e50;
+    color: var(--text-primary);
 }
 
 .customer-company {
-    color: #6c757d;
+    color: var(--text-muted);
     font-style: italic;
 }
 
 .customer-contact, .customer-phone {
-    color: #495057;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     margin-bottom: 5px;
 }
@@ -564,7 +662,7 @@ header p {
 }
 
 .btn-edit {
-    background-color: #28a745;
+    background-color: var(--success-color);
     color: white;
 }
 
@@ -573,7 +671,7 @@ header p {
 }
 
 .btn-delete {
-    background-color: #dc3545;
+    background-color: var(--danger-color);
     color: white;
 }
 
@@ -587,7 +685,7 @@ header p {
 
 .no-customers {
     text-align: center;
-    color: #6c757d;
+    color: var(--text-muted);
     font-style: italic;
     padding: 40px;
 }
