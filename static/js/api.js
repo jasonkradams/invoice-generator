@@ -63,9 +63,13 @@ class ApiClient {
         });
     }
 
-    async toggleTemplate(id) {
+    async toggleTemplate(id, data = {}) {
         return this.request(`/api/invoices/${id}/template`, {
-            method: 'PUT'
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
     }
 

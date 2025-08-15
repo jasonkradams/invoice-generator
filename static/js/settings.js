@@ -22,14 +22,6 @@ class SettingsManager {
     }
 
     setupEventListeners() {
-        // Theme toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle && window.themeManager) {
-            themeToggle.addEventListener('click', () => {
-                window.themeManager.toggleTheme();
-            });
-        }
-
         // Directory picker
         this.setupDirectoryPicker();
     }

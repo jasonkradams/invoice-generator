@@ -384,7 +384,11 @@ class InvoiceManager {
         templates.forEach(invoice => {
             const option = document.createElement('option');
             option.value = invoice.id;
-            option.textContent = `${invoice.invoiceNum || invoice.id} - ${invoice.client.name} (${NumberUtils.formatCurrency(invoice.total)})`;
+            // Use template name if available, otherwise fall back to invoice details
+            const displayText = invoice.templateName 
+                ? invoice.templateName 
+                : `${invoice.invoiceNum || invoice.id} - ${invoice.client.name} (${NumberUtils.formatCurrency(invoice.total)})`;
+            option.textContent = displayText;
             select.appendChild(option);
         });
         
@@ -392,11 +396,80 @@ class InvoiceManager {
     }
 
     async toggleTemplate(invoiceId) {
+        const invoice = this.invoices.find(inv => inv.id === invoiceId);
+        if (!invoice) return;
+
+        // If making it a template, show name modal
+        if (!invoice.template) {
+            this.showTemplateNameModal(invoiceId);
+        } else {
+            // If removing template status, do it directly
+            await this.updateTemplateStatus(invoiceId, false, '');
+        }
+    }
+
+    showTemplateNameModal(invoiceId) {
+        const modal = document.getElementById('templateNameModal');
+        const input = document.getElementById('templateNameInput');
+        const saveBtn = document.getElementById('saveTemplateName');
+        const cancelBtn = document.getElementById('cancelTemplateName');
+
+        // Clear previous input
+        input.value = '';
+        
+        // Show modal
+        modal.style.display = 'flex';
+        input.focus();
+
+        // Handle save
+        const handleSave = async () => {
+            const templateName = input.value.trim();
+            if (!templateName) {
+                alert('Please enter a template name');
+                return;
+            }
+            
+            modal.style.display = 'none';
+            await this.updateTemplateStatus(invoiceId, true, templateName);
+            
+            // Clean up event listeners
+            saveBtn.removeEventListener('click', handleSave);
+            cancelBtn.removeEventListener('click', handleCancel);
+            input.removeEventListener('keypress', handleKeyPress);
+        };
+
+        // Handle cancel
+        const handleCancel = () => {
+            modal.style.display = 'none';
+            
+            // Clean up event listeners
+            saveBtn.removeEventListener('click', handleSave);
+            cancelBtn.removeEventListener('click', handleCancel);
+            input.removeEventListener('keypress', handleKeyPress);
+        };
+
+        // Handle enter key
+        const handleKeyPress = (e) => {
+            if (e.key === 'Enter') {
+                handleSave();
+            } else if (e.key === 'Escape') {
+                handleCancel();
+            }
+        };
+
+        // Add event listeners
+        saveBtn.addEventListener('click', handleSave);
+        cancelBtn.addEventListener('click', handleCancel);
+        input.addEventListener('keypress', handleKeyPress);
+    }
+
+    async updateTemplateStatus(invoiceId, isTemplate, templateName) {
         try {
-            const response = await this.api.toggleTemplate(invoiceId);
+            const response = await this.api.toggleTemplate(invoiceId, { templateName });
             const invoice = this.invoices.find(inv => inv.id === invoiceId);
             if (invoice) {
                 invoice.template = response.template;
+                invoice.templateName = response.templateName || '';
                 this.updateDisplays();
             }
         } catch (error) {

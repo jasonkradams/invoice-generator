@@ -2,18 +2,19 @@ package main
 
 // Invoice represents an invoice with all its details
 type Invoice struct {
-	ID         int           `json:"id"`
-	InvoiceNum string        `json:"invoiceNum"`
-	Date       string        `json:"date"`
-	DueDate    string        `json:"dueDate"`
-	Client     Client        `json:"client"`
-	CustomerID int           `json:"customerId,omitempty"`
-	Items      []InvoiceItem `json:"items"`
-	Subtotal   float64       `json:"subtotal"`
-	Tax        float64       `json:"tax"`
-	Total      float64       `json:"total"`
-	Notes      string        `json:"notes"`
-	Template   bool          `json:"template"`
+	ID           int           `json:"id"`
+	InvoiceNum   string        `json:"invoiceNum"`
+	Date         string        `json:"date"`
+	DueDate      string        `json:"dueDate"`
+	Client       Client        `json:"client"`
+	CustomerID   int           `json:"customerId,omitempty"`
+	Items        []InvoiceItem `json:"items"`
+	Subtotal     float64       `json:"subtotal"`
+	Tax          float64       `json:"tax"`
+	Total        float64       `json:"total"`
+	Notes        string        `json:"notes"`
+	Template     bool          `json:"template"`
+	TemplateName string        `json:"templateName,omitempty"`
 }
 
 // Client represents client information for an invoice

@@ -165,14 +165,31 @@ func (s *Server) toggleTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parse request body for template name
+	var requestData struct {
+		TemplateName string `json:"templateName"`
+	}
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&requestData)
+	}
+
 	if _, index := s.findInvoiceByID(id); index != -1 {
 		s.invoices[index].Template = !s.invoices[index].Template
+		
+		// Set template name when making it a template, clear when removing
+		if s.invoices[index].Template {
+			s.invoices[index].TemplateName = requestData.TemplateName
+		} else {
+			s.invoices[index].TemplateName = ""
+		}
+		
 		s.saveData()
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message":  "Template status updated",
-			"template": s.invoices[index].Template,
+			"message":      "Template status updated",
+			"template":     s.invoices[index].Template,
+			"templateName": s.invoices[index].TemplateName,
 		})
 		return
 	}
