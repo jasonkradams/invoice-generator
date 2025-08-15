@@ -58,6 +58,12 @@ class InvoiceManager {
             createForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
         }
 
+        // Create Invoice button
+        const createBtn = DOMUtils.getElementById('createInvoice');
+        if (createBtn) {
+            createBtn.addEventListener('click', (e) => this.handleFormSubmit(e));
+        }
+
         // Add item button
         const addItemBtn = DOMUtils.getElementById('addItem');
         if (addItemBtn) {
@@ -84,15 +90,22 @@ class InvoiceManager {
     }
 
     async handleFormSubmit(e) {
-        e.preventDefault();
+        console.log('handleFormSubmit called');
+        if (e) e.preventDefault();
         
         try {
             const invoiceData = this.collectFormData();
+            console.log('Invoice data collected:', invoiceData);
+            
             if (!this.validateInvoiceData(invoiceData)) {
+                console.log('Validation failed');
                 return;
             }
-
+            
+            console.log('Validation passed, creating invoice...');
             const newInvoice = await this.api.createInvoice(invoiceData);
+            console.log('Invoice created:', newInvoice);
+            
             this.invoices.push(newInvoice);
             
             this.updateDisplays();
@@ -102,6 +115,7 @@ class InvoiceManager {
             }
             
         } catch (error) {
+            console.error('Invoice creation error:', error);
             if (typeof ErrorHandler !== 'undefined') {
                 ErrorHandler.handleApiError(error, 'Failed to create invoice:');
             } else {
@@ -148,17 +162,23 @@ class InvoiceManager {
 
     validateInvoiceData(data) {
         if (!ValidationUtils.validateRequired(data.client.name)) {
-            ErrorHandler.showError('Client name is required');
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.showError('Client name is required');
+            }
             return false;
         }
 
-        if (data.client.email && !ValidationUtils.validateEmail(data.client.email)) {
-            ErrorHandler.showError('Please enter a valid email address');
+        if (data.client.email && !ValidationUtils.isValidEmail(data.client.email)) {
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.showError('Please enter a valid email address');
+            }
             return false;
         }
 
         if (data.items.length === 0) {
-            ErrorHandler.showError('At least one item is required');
+            if (typeof ErrorHandler !== 'undefined') {
+                ErrorHandler.showError('At least one item is required');
+            }
             return false;
         }
 
