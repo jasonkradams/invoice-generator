@@ -37,17 +37,17 @@ func (s *Server) createInvoicePDF(invoice Invoice) *gofpdf.Fpdf {
 
 // addHeader adds a professional header to the PDF
 func (s *Server) addHeader(pdf *gofpdf.Fpdf, invoice Invoice) {
-	// Company name/logo area
+	// Company name/logo area - use Text() for precise positioning
 	pdf.SetFont("Arial", "B", 24)
 	pdf.SetTextColor(51, 51, 51)
-	pdf.Cell(0, 12, "Adams Family Household")
+	pdf.Text(20, pdf.GetY()+12, "Adams Family Household")
 	pdf.Ln(15)
 
 	pdf.SetFont("Arial", "", 10)
 	pdf.SetTextColor(102, 102, 102)
-	pdf.Cell(0, 5, "16112 E 23rd Ct, Spokane Valley, WA 99037")
+	pdf.Text(20, pdf.GetY()+5, "16112 E 23rd Ct, Spokane Valley, WA 99037")
 	pdf.Ln(4)
-	pdf.Cell(0, 5, "Phone: (425) 879-9792 | Email: jason.k.r.adams@gmail.com")
+	pdf.Text(20, pdf.GetY()+5, "Phone: (425) 879-9792 | Email: jason.k.r.adams@gmail.com")
 	pdf.Ln(15)
 
 	// INVOICE title with background
@@ -190,11 +190,13 @@ func (s *Server) addNotesSection(pdf *gofpdf.Fpdf, notes string) {
 	pdf.SetFont("Arial", "", 10)
 	pdf.SetTextColor(0, 0, 0)
 
-	// Calculate the height needed for the notes
-	lines := pdf.SplitLines([]byte(notes), 170)
+	// Calculate the height needed for the notes - use proper margins
+	lines := pdf.SplitLines([]byte(notes), 150)
 	height := float64(len(lines))*5 + 6
 
-	pdf.Rect(10, pdf.GetY()-2, 170, height, "FD")
-	pdf.SetXY(15, pdf.GetY()+2)
-	pdf.MultiCell(160, 5, notes, "", "", false)
+	// Use proper margin positioning (20mm left margin)
+	currentY := pdf.GetY()
+	pdf.Rect(20, currentY-2, 150, height, "FD")
+	pdf.SetXY(25, currentY+2)
+	pdf.MultiCell(140, 5, notes, "", "", false)
 }

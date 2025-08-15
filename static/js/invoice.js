@@ -273,8 +273,8 @@ class InvoiceManager {
             const rate = parseFloat(row.querySelector('.item-rate')?.value) || 0;
             const percentage = parseFloat(row.querySelector('.item-percentage')?.value) || 0;
             
-            // Amount = Rate * Percentage (as decimal)
-            const amount = rate * (percentage / 100);
+            // Amount = Quantity * (Rate * Percentage as decimal)
+            const amount = quantity * rate * (percentage / 100);
             
             const amountField = row.querySelector('.item-amount');
             if (amountField) {
