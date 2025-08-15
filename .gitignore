@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+invoice-server
 
 # Test binary, built with `go test -c`
 *.test
