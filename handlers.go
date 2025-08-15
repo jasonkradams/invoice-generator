@@ -21,13 +21,19 @@ type Server struct {
 
 // NewServer creates a new server instance
 func NewServer() *Server {
-	storage := NewStorage("data") // Start with default, will be updated from settings
-	invoices, customers, nextID, nextCustomerID, settings := storage.LoadData()
-
-	// Update storage with configured data directory
-	if settings.DataDirectory != "" {
-		storage.SetDataDirectory(settings.DataDirectory)
+	// First, try to load settings from default location to get configured data directory
+	defaultStorage := NewStorage("data")
+	_, _, _, _, defaultSettings := defaultStorage.LoadData()
+	
+	// Use configured data directory if available, otherwise use default
+	dataDir := "data"
+	if defaultSettings.DataDirectory != "" {
+		dataDir = defaultSettings.DataDirectory
 	}
+	
+	// Create storage with the correct data directory and load data from there
+	storage := NewStorage(dataDir)
+	invoices, customers, nextID, nextCustomerID, settings := storage.LoadData()
 
 	return &Server{
 		invoices:       invoices,
@@ -328,15 +334,35 @@ func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if data directory changed
+	oldDataDir := s.meta.Settings.DataDirectory
+	newDataDir := settings.DataDirectory
+	
 	// Update settings in memory
 	s.meta.Settings = settings
 
-	// Update storage data directory if it changed
-	if settings.DataDirectory != "" {
-		s.storage.SetDataDirectory(settings.DataDirectory)
+	// If data directory changed, update storage and reload data from new location
+	if newDataDir != "" && newDataDir != oldDataDir {
+		// Save current data to old location first
+		s.saveData()
+		
+		// Update storage to new directory
+		s.storage.SetDataDirectory(newDataDir)
+		
+		// Reload data from new location
+		invoices, customers, nextID, nextCustomerID, _ := s.storage.LoadData()
+		s.invoices = invoices
+		s.customers = customers
+		s.nextID = nextID
+		s.nextCustomerID = nextCustomerID
+		
+		// Preserve the updated settings (don't overwrite with what was loaded)
+		s.meta.Settings = settings
+		s.meta.NextID = nextID
+		s.meta.NextCustomerID = nextCustomerID
 	}
 
-	// Save to storage
+	// Save to storage (in new location if directory changed)
 	s.saveData()
 
 	w.Header().Set("Content-Type", "application/json")

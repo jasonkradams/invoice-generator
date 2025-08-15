@@ -117,7 +117,7 @@ class InvoiceManager {
         } catch (error) {
             console.error('Invoice creation error:', error);
             if (typeof ErrorHandler !== 'undefined') {
-                ErrorHandler.handleApiError(error, 'Failed to create invoice:');
+                ErrorHandler.showError('Failed to create invoice:');
             } else {
                 console.error('Failed to create invoice:', error);
             }
