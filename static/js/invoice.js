@@ -464,10 +464,12 @@ class InvoiceManager {
                     const descField = row.querySelector('.item-description');
                     const qtyField = row.querySelector('.item-quantity');
                     const rateField = row.querySelector('.item-rate');
+                    const percentageField = row.querySelector('.item-percentage');
                     
                     if (descField) descField.value = item.description || '';
                     if (qtyField) qtyField.value = item.quantity || 1;
                     if (rateField) rateField.value = item.rate || 0;
+                    if (percentageField) percentageField.value = item.percentage || 100;
                 }
             });
         }
