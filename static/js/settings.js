@@ -37,16 +37,16 @@ class SettingsManager {
                     if ('showDirectoryPicker' in window) {
                         const dirHandle = await window.showDirectoryPicker();
                         console.log('Directory handle:', dirHandle);
-                        
+
                         // Create a temporary file in the selected directory to get the full path
                         let fullPath = '';
-                        
+
                         try {
                             // Create a temporary file to extract the path
                             const tempFileName = '.temp_path_' + Date.now();
                             const tempFileHandle = await dirHandle.getFileHandle(tempFileName, { create: true });
                             const tempFile = await tempFileHandle.getFile();
-                            
+
                             // Extract path from the webkitRelativePath or use other methods
                             if (tempFile.webkitRelativePath) {
                                 const pathParts = tempFile.webkitRelativePath.split('/');
@@ -58,22 +58,22 @@ class SettingsManager {
                                     // Try to extract path information
                                     return file.name ? file.name.replace(tempFileName, '') : '';
                                 });
-                                
+
                                 if (fileSystemPath) {
                                     fullPath = fileSystemPath;
                                 }
                             }
-                            
+
                             // Clean up the temporary file
                             try {
                                 await dirHandle.removeEntry(tempFileName);
                             } catch (cleanupError) {
                                 console.log('Could not clean up temp file:', cleanupError);
                             }
-                            
+
                         } catch (error) {
                             console.log('Could not create temp file for path extraction:', error);
-                            
+
                             // Fallback: try to use the Origin Private File System API
                             try {
                                 // Use the newer API methods if available
@@ -86,13 +86,13 @@ class SettingsManager {
                                 console.log('OPFS not available:', opfsError);
                             }
                         }
-                        
+
                         // If we still don't have a path, use just the directory name as a relative path
                         if (!fullPath && dirHandle.name) {
                             // Use directory name and show a helpful message
                             fullPath = dirHandle.name;
                             console.log('Using directory name as path:', fullPath);
-                            
+
                             // Show a brief notification that the user should edit the path
                             setTimeout(() => {
                                 const field = document.getElementById('dataDirectory');
@@ -104,7 +104,7 @@ class SettingsManager {
                                     message.textContent = 'Please edit this to the full path (e.g., /Users/username/Google Drive/My Drive/Invoices/Adams Household)';
                                     message.style.cssText = 'position: absolute; background: #333; color: white; padding: 8px; border-radius: 4px; font-size: 12px; z-index: 1000; max-width: 300px; margin-top: 5px;';
                                     field.parentNode.appendChild(message);
-                                    
+
                                     // Remove message after 5 seconds
                                     setTimeout(() => {
                                         if (message.parentNode) {
@@ -114,7 +114,7 @@ class SettingsManager {
                                 }
                             }, 100);
                         }
-                        
+
                         if (fullPath) {
                             console.log('Using path:', fullPath);
                             dataDirectoryField.value = fullPath;
@@ -165,7 +165,7 @@ class SettingsManager {
         DOMUtils.setElementValue('companyPhone', this.settings.company.phone);
         DOMUtils.setElementValue('companyWebsite', this.settings.company.website);
         DOMUtils.setElementValue('companyAddress', this.settings.company.address);
-        
+
         // Populate data directory - debug logging
         console.log('Populating dataDirectory with:', this.settings.dataDirectory);
         DOMUtils.setElementValue('dataDirectory', this.settings.dataDirectory);
@@ -179,7 +179,7 @@ class SettingsManager {
             this.settings.company.phone = DOMUtils.getElementValue('companyPhone') || '(425) 879-9792';
             this.settings.company.website = DOMUtils.getElementValue('companyWebsite') || '';
             this.settings.company.address = DOMUtils.getElementValue('companyAddress') || '16112 E 23rd Ct, Spokane Valley, WA 99037';
-            
+
             // Don't override dataDirectory if it was set by directory picker
             const currentDataDir = DOMUtils.getElementValue('dataDirectory');
             if (currentDataDir && currentDataDir !== 'data') {

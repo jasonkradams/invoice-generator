@@ -25,7 +25,7 @@ class InvoiceManager {
             this.invoices = [];
             this.customers = [];
             this.updateDisplays();
-            
+
             if (typeof ErrorHandler !== 'undefined') {
                 ErrorHandler.handleApiError(error, 'Failed to load data:');
             } else {
@@ -91,29 +91,29 @@ class InvoiceManager {
 
     async handleFormSubmit(e) {
         console.log('handleFormSubmit called');
-        if (e) e.preventDefault();
-        
+        if (e) {e.preventDefault();}
+
         try {
             const invoiceData = this.collectFormData();
             console.log('Invoice data collected:', invoiceData);
-            
+
             if (!this.validateInvoiceData(invoiceData)) {
                 console.log('Validation failed');
                 return;
             }
-            
+
             console.log('Validation passed, creating invoice...');
             const newInvoice = await this.api.createInvoice(invoiceData);
             console.log('Invoice created:', newInvoice);
-            
+
             this.invoices.push(newInvoice);
-            
+
             this.updateDisplays();
             this.clearForm();
             if (typeof ErrorHandler !== 'undefined') {
                 ErrorHandler.showSuccess('Invoice created successfully!');
             }
-            
+
         } catch (error) {
             console.error('Invoice creation error:', error);
             if (typeof ErrorHandler !== 'undefined') {
@@ -126,7 +126,7 @@ class InvoiceManager {
 
     collectFormData() {
         const items = this.collectInvoiceItems();
-        
+
         return {
             date: DOMUtils.getElementValue('date'),
             dueDate: DOMUtils.getElementValue('dueDate'),
@@ -146,18 +146,18 @@ class InvoiceManager {
     collectInvoiceItems() {
         const items = [];
         const itemRows = document.querySelectorAll('.item-row');
-        
+
         itemRows.forEach(row => {
             const description = row.querySelector('.item-description')?.value || '';
             const quantity = parseInt(row.querySelector('.item-quantity')?.value) || 1;
             const rate = parseFloat(row.querySelector('.item-rate')?.value) || 0;
             const percentage = parseFloat(row.querySelector('.item-percentage')?.value) || 100;
-            
+
             if (description.trim()) {
                 items.push({ description, quantity, rate, percentage });
             }
         });
-        
+
         return items;
     }
 
@@ -188,7 +188,7 @@ class InvoiceManager {
 
     addInvoiceItem() {
         const container = DOMUtils.getElementById('itemsContainer');
-        if (!container) return;
+        if (!container) {return;}
 
         const itemRow = document.createElement('div');
         itemRow.className = 'item-row';
@@ -226,7 +226,7 @@ class InvoiceManager {
         const rateInputs = document.querySelectorAll('.item-rate');
         const percentageInputs = document.querySelectorAll('.item-percentage');
         const amountInputs = document.querySelectorAll('.item-amount');
-        
+
         [...quantityInputs, ...rateInputs, ...percentageInputs].forEach(input => {
             input.removeEventListener('input', this.calculateTotals.bind(this));
             input.addEventListener('input', this.calculateTotals.bind(this));
@@ -245,12 +245,12 @@ class InvoiceManager {
             const currentRow = e.target.closest('.item-row');
             const allRows = document.querySelectorAll('.item-row');
             const currentIndex = Array.from(allRows).indexOf(currentRow);
-            
+
             // If this is the last row, create a new item
             if (currentIndex === allRows.length - 1) {
                 e.preventDefault(); // Prevent default tab behavior
                 this.addInvoiceItem();
-                
+
                 // Focus on the description field of the newly created item
                 setTimeout(() => {
                     const newRows = document.querySelectorAll('.item-row');
@@ -267,20 +267,20 @@ class InvoiceManager {
     calculateTotals() {
         let subtotal = 0;
         const itemRows = document.querySelectorAll('.item-row');
-        
+
         itemRows.forEach(row => {
             const quantity = parseFloat(row.querySelector('.item-quantity')?.value) || 0;
             const rate = parseFloat(row.querySelector('.item-rate')?.value) || 0;
             const percentage = parseFloat(row.querySelector('.item-percentage')?.value) || 0;
-            
+
             // Amount = Quantity * (Rate * Percentage as decimal)
             const amount = quantity * rate * (percentage / 100);
-            
+
             const amountField = row.querySelector('.item-amount');
             if (amountField) {
                 amountField.value = NumberUtils.formatCurrency(amount);
             }
-            
+
             subtotal += amount;
         });
 
@@ -290,7 +290,7 @@ class InvoiceManager {
         // Update subtotal and total display elements
         const subtotalElement = document.getElementById('subtotal');
         const totalElement = document.getElementById('total');
-        
+
         if (subtotalElement) {
             subtotalElement.textContent = NumberUtils.formatCurrency(subtotal);
         }
@@ -301,7 +301,7 @@ class InvoiceManager {
 
     displayInvoices() {
         const container = DOMUtils.getElementById('invoicesList');
-        if (!container) return;
+        if (!container) {return;}
 
         if (this.invoices.length === 0) {
             container.innerHTML = '<p class="no-invoices">No invoices created yet.</p>';
@@ -329,7 +329,7 @@ class InvoiceManager {
 
     displayTemplates() {
         const container = DOMUtils.getElementById('templatesList');
-        if (!container) return;
+        if (!container) {return;}
 
         if (!this.invoices || this.invoices.length === 0) {
             container.innerHTML = '<p class="no-templates">No invoices loaded yet.</p>';
@@ -357,13 +357,13 @@ class InvoiceManager {
 
     updateCustomerSelect() {
         const select = DOMUtils.getElementById('customerSelect');
-        if (!select) return;
+        if (!select) {return;}
 
         select.innerHTML = '<option value="">-- Select customer --</option>';
-        
+
         // Use customers from customerManager if available, otherwise use local copy
         const customers = (window.customerManager && window.customerManager.customers) || this.customers || [];
-        
+
         customers.forEach(customer => {
             const option = document.createElement('option');
             option.value = customer.id;
@@ -374,30 +374,30 @@ class InvoiceManager {
 
     updateInvoiceTemplateSelect() {
         const select = DOMUtils.getElementById('invoiceTemplateSelect');
-        if (!select) return;
+        if (!select) {return;}
 
         select.innerHTML = '<option value="">-- Select invoice to use as template --</option>';
-        
+
         // Show only invoices marked as templates
         const templates = this.invoices.filter(invoice => invoice.template === true);
-        
+
         templates.forEach(invoice => {
             const option = document.createElement('option');
             option.value = invoice.id;
             // Use template name if available, otherwise fall back to invoice details
-            const displayText = invoice.templateName 
-                ? invoice.templateName 
+            const displayText = invoice.templateName
+                ? invoice.templateName
                 : `${invoice.invoiceNum || invoice.id} - ${invoice.client.name} (${NumberUtils.formatCurrency(invoice.total)})`;
             option.textContent = displayText;
             select.appendChild(option);
         });
-        
+
         console.log('Updated template dropdown with templates:', templates);
     }
 
     async toggleTemplate(invoiceId) {
         const invoice = this.invoices.find(inv => inv.id === invoiceId);
-        if (!invoice) return;
+        if (!invoice) {return;}
 
         // If making it a template, show name modal
         if (!invoice.template) {
@@ -416,7 +416,7 @@ class InvoiceManager {
 
         // Clear previous input
         input.value = '';
-        
+
         // Show modal
         modal.style.display = 'flex';
         input.focus();
@@ -428,10 +428,10 @@ class InvoiceManager {
                 alert('Please enter a template name');
                 return;
             }
-            
+
             modal.style.display = 'none';
             await this.updateTemplateStatus(invoiceId, true, templateName);
-            
+
             // Clean up event listeners
             saveBtn.removeEventListener('click', handleSave);
             cancelBtn.removeEventListener('click', handleCancel);
@@ -441,7 +441,7 @@ class InvoiceManager {
         // Handle cancel
         const handleCancel = () => {
             modal.style.display = 'none';
-            
+
             // Clean up event listeners
             saveBtn.removeEventListener('click', handleSave);
             cancelBtn.removeEventListener('click', handleCancel);
@@ -491,66 +491,66 @@ class InvoiceManager {
 
     populateFormFromInvoice(invoice) {
         console.log('Populating form from invoice:', invoice);
-        
+
         // Set new dates
         DOMUtils.setElementValue('date', DateUtils.getTodayString());
         DOMUtils.setElementValue('dueDate', DateUtils.getFutureDateString(30));
-        
+
         // Populate client information
         console.log('Setting client info:', invoice.client);
         const clientNameField = document.getElementById('clientName');
         const clientEmailField = document.getElementById('clientEmail');
         const clientAddressField = document.getElementById('clientAddress');
         const clientPhoneField = document.getElementById('clientPhone');
-        
+
         console.log('Client fields found:', {
             name: clientNameField,
             email: clientEmailField,
             address: clientAddressField,
             phone: clientPhoneField
         });
-        
-        if (clientNameField) clientNameField.value = invoice.client.name || '';
-        if (clientEmailField) clientEmailField.value = invoice.client.email || '';
-        if (clientAddressField) clientAddressField.value = invoice.client.address || '';
-        if (clientPhoneField) clientPhoneField.value = invoice.client.phone || '';
-        
+
+        if (clientNameField) {clientNameField.value = invoice.client.name || '';}
+        if (clientEmailField) {clientEmailField.value = invoice.client.email || '';}
+        if (clientAddressField) {clientAddressField.value = invoice.client.address || '';}
+        if (clientPhoneField) {clientPhoneField.value = invoice.client.phone || '';}
+
         // Set customer dropdown
         if (invoice.customerId) {
             DOMUtils.setElementValue('customerSelect', invoice.customerId);
         }
-        
+
         // Clear and populate items
         const itemsContainer = DOMUtils.getElementById('itemsContainer');
         if (itemsContainer) {
             // Clear existing items
             itemsContainer.innerHTML = '';
-            
+
             // Add items from invoice
             invoice.items.forEach((item, index) => {
                 this.addInvoiceItem();
                 const itemRows = document.querySelectorAll('.item-row');
                 const row = itemRows[itemRows.length - 1]; // Get the last added row
-                
+
                 if (row) {
                     console.log(`Setting item ${index}:`, item);
                     const descField = row.querySelector('.item-description');
                     const qtyField = row.querySelector('.item-quantity');
                     const rateField = row.querySelector('.item-rate');
                     const percentageField = row.querySelector('.item-percentage');
-                    
-                    if (descField) descField.value = item.description || '';
-                    if (qtyField) qtyField.value = item.quantity || 1;
-                    if (rateField) rateField.value = item.rate || 0;
-                    if (percentageField) percentageField.value = item.percentage || 100;
+
+                    if (descField) {descField.value = item.description || '';}
+                    if (qtyField) {qtyField.value = item.quantity || 1;}
+                    if (rateField) {rateField.value = item.rate || 0;}
+                    if (percentageField) {percentageField.value = item.percentage || 100;}
                 }
             });
         }
-        
+
         // Set tax and notes
         DOMUtils.setElementValue('tax', invoice.tax || 0);
         DOMUtils.setElementValue('notes', invoice.notes || '');
-        
+
         // Update calculations
         this.updateItemListeners();
         this.calculateTotals();
@@ -558,9 +558,9 @@ class InvoiceManager {
 
     viewInvoice(invoiceId) {
         const invoice = this.invoices.find(inv => inv.id === invoiceId);
-        if (!invoice) return;
+        if (!invoice) {return;}
 
-        const items = invoice.items.map(item => 
+        const items = invoice.items.map(item =>
             `${item.description} - Qty: ${item.quantity} x ${NumberUtils.formatCurrency(item.rate)} = ${NumberUtils.formatCurrency(item.amount)}`
         ).join('\n');
 
@@ -587,7 +587,7 @@ ${invoice.notes ? 'Notes:\n' + invoice.notes : ''}`;
 
     handleCustomerSelect() {
         const customerId = parseInt(DOMUtils.getElementValue('customerSelect'));
-        if (!customerId) return;
+        if (!customerId) {return;}
 
         const customer = this.customers.find(c => c.id === customerId);
         if (customer) {
@@ -602,10 +602,10 @@ ${invoice.notes ? 'Notes:\n' + invoice.notes : ''}`;
         const selectElement = document.getElementById('invoiceTemplateSelect');
         console.log('Template select element:', selectElement);
         console.log('Template select value:', selectElement ? selectElement.value : 'null');
-        
+
         const invoiceId = parseInt(selectElement ? selectElement.value : '');
         console.log('Loading invoice template, ID:', invoiceId);
-        if (!invoiceId) return;
+        if (!invoiceId) {return;}
 
         const invoice = this.invoices.find(inv => inv.id === invoiceId);
         console.log('Found invoice:', invoice);
@@ -619,28 +619,28 @@ ${invoice.notes ? 'Notes:\n' + invoice.notes : ''}`;
         // Reset all form fields to default values
         DOMUtils.setElementValue('date', DateUtils.getTodayString());
         DOMUtils.setElementValue('dueDate', DateUtils.getFutureDateString(30));
-        
+
         // Reset dropdowns to default options
         DOMUtils.setElementValue('invoiceTemplateSelect', '');
         DOMUtils.setElementValue('customerSelect', '');
-        
+
         // Clear client information
         DOMUtils.setElementValue('clientName', '');
         DOMUtils.setElementValue('clientEmail', '');
         DOMUtils.setElementValue('clientAddress', '');
         DOMUtils.setElementValue('clientPhone', '');
-        
+
         // Clear tax and notes
         DOMUtils.setElementValue('tax', '0');
         DOMUtils.setElementValue('notes', '');
-        
+
         // Reset items to one empty row
         const itemsContainer = DOMUtils.getElementById('itemsContainer');
         if (itemsContainer) {
             DOMUtils.clearElement(itemsContainer);
             this.addInvoiceItem();
         }
-        
+
         // Update calculations
         this.calculateTotals();
     }
@@ -657,10 +657,10 @@ ${invoice.notes ? 'Notes:\n' + invoice.notes : ''}`;
         // Show selected tab
         const targetTab = DOMUtils.getElementById(`${tabName}-tab`);
         const targetBtn = document.querySelector(`[onclick="showTab('${tabName}')"]`);
-        
-        if (targetTab) targetTab.classList.add('active');
-        if (targetBtn) targetBtn.classList.add('active');
-        
+
+        if (targetTab) {targetTab.classList.add('active');}
+        if (targetBtn) {targetBtn.classList.add('active');}
+
         // Load content when switching tabs
         if (tabName === 'templates') {
             this.displayTemplates();

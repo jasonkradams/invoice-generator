@@ -8,7 +8,7 @@ class ThemeManager {
         // Check for saved theme preference or default to light mode
         const savedTheme = localStorage.getItem('theme') || 'light';
         this.setTheme(savedTheme);
-        
+
         // Set up theme toggle button
         this.setupThemeToggle();
     }
@@ -24,7 +24,7 @@ class ThemeManager {
         document.documentElement.setAttribute('data-theme', theme);
         document.body.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        
+
         // Update theme icon
         const themeIcon = document.querySelector('.theme-icon');
         if (themeIcon) {

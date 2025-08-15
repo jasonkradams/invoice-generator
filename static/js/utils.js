@@ -3,7 +3,7 @@
 // Date formatting utilities
 const DateUtils = {
     formatDate(dateString) {
-        if (!dateString) return '';
+        if (!dateString) {return '';}
         const date = new Date(dateString);
         return date.toLocaleDateString();
     },

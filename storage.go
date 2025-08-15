@@ -14,7 +14,7 @@ const (
 )
 
 // Storage handles all data persistence operations
-type Storage struct{
+type Storage struct {
 	dataDir string
 }
 
@@ -93,9 +93,9 @@ func (s *Storage) LoadData() ([]Invoice, []Customer, int, int, Settings) {
 		}
 	}
 
-	log.Printf("Loaded %d invoices, %d customers, nextID: %d, nextCustomerID: %d", 
+	log.Printf("Loaded %d invoices, %d customers, nextID: %d, nextCustomerID: %d",
 		len(invoices), len(customers), nextID, nextCustomerID)
-	
+
 	return invoices, customers, nextID, nextCustomerID, settings
 }
 

@@ -43,7 +43,7 @@ class CustomerManager {
     async handleSaveCustomer() {
         try {
             const customerData = this.collectCustomerFormData();
-            
+
             if (!this.validateCustomerData(customerData)) {
                 return;
             }
@@ -63,7 +63,7 @@ class CustomerManager {
 
             this.displayCustomers();
             this.clearCustomerForm();
-            
+
             // Update invoice manager if it exists
             if (window.invoiceManager) {
                 window.invoiceManager.customers = this.customers;
@@ -101,7 +101,7 @@ class CustomerManager {
 
     displayCustomers() {
         const container = DOMUtils.getElementById('customersList');
-        if (!container) return;
+        if (!container) {return;}
 
         if (this.customers.length === 0) {
             container.innerHTML = '<p class="no-customers">No customers added yet.</p>';
@@ -129,10 +129,10 @@ class CustomerManager {
 
     editCustomer(customerId) {
         const customer = this.customers.find(c => c.id === customerId);
-        if (!customer) return;
+        if (!customer) {return;}
 
         this.editingCustomerId = customerId;
-        
+
         // Populate form with customer data
         DOMUtils.setElementValue('customerName', customer.name);
         DOMUtils.setElementValue('customerEmail', customer.email);
@@ -149,20 +149,20 @@ class CustomerManager {
 
     async deleteCustomer(customerId) {
         const customer = this.customers.find(c => c.id === customerId);
-        if (!customer) return;
+        if (!customer) {return;}
 
         if (confirm(`Are you sure you want to delete customer "${customer.name}"?`)) {
             try {
                 await this.api.deleteCustomer(customerId);
                 this.customers = this.customers.filter(c => c.id !== customerId);
                 this.displayCustomers();
-                
+
                 // Update invoice manager if it exists
                 if (window.invoiceManager) {
                     window.invoiceManager.customers = this.customers;
                     window.invoiceManager.updateCustomerSelect();
                 }
-                
+
                 if (typeof ErrorHandler !== 'undefined') {
                     ErrorHandler.showSuccess('Customer deleted successfully!');
                 }
@@ -187,7 +187,7 @@ class CustomerManager {
 
     clearCustomerForm() {
         this.editingCustomerId = null;
-        
+
         // Clear form fields
         ['customerName', 'customerEmail', 'customerPhone', 'customerCompany', 'customerAddress']
             .forEach(id => DOMUtils.setElementValue(id, ''));

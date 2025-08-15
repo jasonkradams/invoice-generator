@@ -47,4 +47,3 @@ func main() {
 	fmt.Println("Invoice Management Server starting on :8080")
 	log.Fatal(http.ListenAndServe(":8080", corsHandler))
 }
-

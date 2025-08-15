@@ -24,13 +24,13 @@ func NewServer() *Server {
 	// First, try to load settings from default location to get configured data directory
 	defaultStorage := NewStorage("data")
 	_, _, _, _, defaultSettings := defaultStorage.LoadData()
-	
+
 	// Use configured data directory if available, otherwise use default
 	dataDir := "data"
 	if defaultSettings.DataDirectory != "" {
 		dataDir = defaultSettings.DataDirectory
 	}
-	
+
 	// Create storage with the correct data directory and load data from there
 	storage := NewStorage(dataDir)
 	invoices, customers, nextID, nextCustomerID, settings := storage.LoadData()
@@ -181,14 +181,14 @@ func (s *Server) toggleTemplate(w http.ResponseWriter, r *http.Request) {
 
 	if _, index := s.findInvoiceByID(id); index != -1 {
 		s.invoices[index].Template = !s.invoices[index].Template
-		
+
 		// Set template name when making it a template, clear when removing
 		if s.invoices[index].Template {
 			s.invoices[index].TemplateName = requestData.TemplateName
 		} else {
 			s.invoices[index].TemplateName = ""
 		}
-		
+
 		s.saveData()
 
 		w.Header().Set("Content-Type", "application/json")
@@ -337,7 +337,7 @@ func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request) {
 	// Check if data directory changed
 	oldDataDir := s.meta.Settings.DataDirectory
 	newDataDir := settings.DataDirectory
-	
+
 	// Update settings in memory
 	s.meta.Settings = settings
 
@@ -345,17 +345,17 @@ func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request) {
 	if newDataDir != "" && newDataDir != oldDataDir {
 		// Save current data to old location first
 		s.saveData()
-		
+
 		// Update storage to new directory
 		s.storage.SetDataDirectory(newDataDir)
-		
+
 		// Reload data from new location
 		invoices, customers, nextID, nextCustomerID, _ := s.storage.LoadData()
 		s.invoices = invoices
 		s.customers = customers
 		s.nextID = nextID
 		s.nextCustomerID = nextCustomerID
-		
+
 		// Preserve the updated settings (don't overwrite with what was loaded)
 		s.meta.Settings = settings
 		s.meta.NextID = nextID
