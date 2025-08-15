@@ -92,6 +92,11 @@ func (s *Server) createInvoice(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Ensure nextID is at least 1
+	if s.nextID == 0 {
+		s.nextID = 1
+	}
+	
 	invoice.ID = s.nextID
 	s.nextID++
 	invoice.InvoiceNum = fmt.Sprintf("INV-%04d", invoice.ID)

@@ -343,9 +343,11 @@ class InvoiceManager {
         templates.forEach(invoice => {
             const option = document.createElement('option');
             option.value = invoice.id;
-            option.textContent = `${invoice.invoiceNum} - ${invoice.client.name} (${NumberUtils.formatCurrency(invoice.total)})`;
+            option.textContent = `${invoice.invoiceNum || invoice.id} - ${invoice.client.name} (${NumberUtils.formatCurrency(invoice.total)})`;
             select.appendChild(option);
         });
+        
+        console.log('Updated template dropdown with templates:', templates);
     }
 
     async toggleTemplate(invoiceId) {
@@ -374,15 +376,30 @@ class InvoiceManager {
     }
 
     populateFormFromInvoice(invoice) {
+        console.log('Populating form from invoice:', invoice);
+        
         // Set new dates
         DOMUtils.setElementValue('date', DateUtils.getTodayString());
         DOMUtils.setElementValue('dueDate', DateUtils.getFutureDateString(30));
         
         // Populate client information
-        DOMUtils.setElementValue('clientName', invoice.client.name);
-        DOMUtils.setElementValue('clientEmail', invoice.client.email);
-        DOMUtils.setElementValue('clientAddress', invoice.client.address);
-        DOMUtils.setElementValue('clientPhone', invoice.client.phone);
+        console.log('Setting client info:', invoice.client);
+        const clientNameField = document.getElementById('clientName');
+        const clientEmailField = document.getElementById('clientEmail');
+        const clientAddressField = document.getElementById('clientAddress');
+        const clientPhoneField = document.getElementById('clientPhone');
+        
+        console.log('Client fields found:', {
+            name: clientNameField,
+            email: clientEmailField,
+            address: clientAddressField,
+            phone: clientPhoneField
+        });
+        
+        if (clientNameField) clientNameField.value = invoice.client.name || '';
+        if (clientEmailField) clientEmailField.value = invoice.client.email || '';
+        if (clientAddressField) clientAddressField.value = invoice.client.address || '';
+        if (clientPhoneField) clientPhoneField.value = invoice.client.phone || '';
         
         // Set customer dropdown
         if (invoice.customerId) {
@@ -392,17 +409,24 @@ class InvoiceManager {
         // Clear and populate items
         const itemsContainer = DOMUtils.getElementById('itemsContainer');
         if (itemsContainer) {
-            DOMUtils.clearElement(itemsContainer);
+            // Clear existing items
+            itemsContainer.innerHTML = '';
             
-            invoice.items.forEach(() => this.addInvoiceItem());
-            
-            const itemRows = document.querySelectorAll('.item-row');
+            // Add items from invoice
             invoice.items.forEach((item, index) => {
-                if (itemRows[index]) {
-                    const row = itemRows[index];
-                    row.querySelector('.item-description').value = item.description || '';
-                    row.querySelector('.item-quantity').value = item.quantity || 1;
-                    row.querySelector('.item-rate').value = item.rate || 0;
+                this.addInvoiceItem();
+                const itemRows = document.querySelectorAll('.item-row');
+                const row = itemRows[itemRows.length - 1]; // Get the last added row
+                
+                if (row) {
+                    console.log(`Setting item ${index}:`, item);
+                    const descField = row.querySelector('.item-description');
+                    const qtyField = row.querySelector('.item-quantity');
+                    const rateField = row.querySelector('.item-rate');
+                    
+                    if (descField) descField.value = item.description || '';
+                    if (qtyField) qtyField.value = item.quantity || 1;
+                    if (rateField) rateField.value = item.rate || 0;
                 }
             });
         }
@@ -459,10 +483,17 @@ ${invoice.notes ? 'Notes:\n' + invoice.notes : ''}`;
     }
 
     loadInvoiceTemplate() {
-        const invoiceId = parseInt(DOMUtils.getElementValue('invoiceTemplateSelect'));
+        const selectElement = document.getElementById('invoiceTemplateSelect');
+        console.log('Template select element:', selectElement);
+        console.log('Template select value:', selectElement ? selectElement.value : 'null');
+        
+        const invoiceId = parseInt(selectElement ? selectElement.value : '');
+        console.log('Loading invoice template, ID:', invoiceId);
         if (!invoiceId) return;
 
         const invoice = this.invoices.find(inv => inv.id === invoiceId);
+        console.log('Found invoice:', invoice);
+        console.log('Available invoices:', this.invoices);
         if (invoice) {
             this.populateFormFromInvoice(invoice);
         }
